@@ -1,6 +1,6 @@
 local M = {}
 
-function M.defaultHandlers(installed)
+function M.default_handlers(installed)
 	local registry = require("mason-registry")
 	local form = {}
 	for _, pkg_info in ipairs(registry.get_all_packages()) do
@@ -27,7 +27,7 @@ M.opts = {
 
 function M.setup(opts)
 	M.opts.ensure_installed = opts.ensure_installed or {}
-	M.opts.handlers = opts.handlers or M.defaultHandlers()
+	M.opts.handlers = opts.handlers or {}
 
 	require("mason-conform.auto_install")()
 	require("conform").formatters_by_ft = M.opts.handlers
