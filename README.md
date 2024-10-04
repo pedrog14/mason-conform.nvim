@@ -28,7 +28,7 @@ access the mason registry.
 ```lua
 require("mason-conform").setup({
     ensure_installed = { "prettierd" } -- List of formatters install automatically
-    handlers = require("mason-conform").default_handlers(ensure_installed) -- List of languages and respective formatters installed by mason-conform
+    handlers = require("mason-conform").default_handlers() -- List of languages and respective formatters installed by mason-conform
 })
 ```
 
