@@ -1,22 +1,17 @@
 local M = {}
 
-function M.default_handlers(installed)
+function M.default_handlers()
     local registry = require("mason-registry")
     local form = {}
-    for _, pkg_info in ipairs(registry.get_all_packages()) do
-        for _, i in ipairs(installed) do
-            if pkg_info.name == i then
-                for _, type in ipairs(pkg_info.spec.categories) do
-                    if type == "Formatter" then
-                        for _, lang in ipairs(pkg_info.spec.languages) do
-                            lang = string.lower(lang)
-                            if form[lang] == nil then
-                                form[lang] = { pkg_info.name }
-                            else
-                                table.insert(form[lang], pkg_info.name)
-                            end
-                        end
-                        break
+    for _, pkg_info in ipairs(registry.get_installed_packages()) do
+        for _, type in ipairs(pkg_info.spec.categories) do
+            if type == "Formatter" then
+                for _, lang in ipairs(pkg_info.spec.languages) do
+                    lang = string.lower(lang)
+                    if form[lang] == nil then
+                        form[lang] = { pkg_info.name }
+                    else
+                        table.insert(form[lang], pkg_info.name)
                     end
                 end
                 break
@@ -39,4 +34,5 @@ function M.setup(opts)
     require("conform").formatters_by_ft = M.opts.handlers
 end
 
-return M
+vim.print(M.default_handlers())
+-- return M
