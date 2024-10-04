@@ -4,16 +4,21 @@ function M.default_handlers(installed)
 	local registry = require("mason-registry")
 	local form = {}
 	for _, pkg_info in ipairs(registry.get_all_packages()) do
-		for _, type in ipairs(pkg_info.spec.categories) do
-			if type == "Formatter" then
-				for _, lang in ipairs(pkg_info.spec.languages) do
-					lang = string.lower(lang)
-					if form[lang] == nil then
-						form[lang] = pkg_info.name ~= installed and { pkg_info.name } or nil
-					else
-						table.insert(form[lang], pkg_info.name)
+		for _, i in ipairs(installed) do
+			if pkg_info.name == i then
+				for _, type in ipairs(pkg_info.spec.categories) do
+					if type == "Formatter" then
+						for _, lang in ipairs(pkg_info.spec.languages) do
+							lang = string.lower(lang)
+							if form[lang] == nil then
+								form[lang] = { pkg_info.name }
+							else
+								table.insert(form[lang], pkg_info.name)
+							end
+						end
 					end
 				end
+				break
 			end
 		end
 	end
