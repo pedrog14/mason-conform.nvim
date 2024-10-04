@@ -34,5 +34,4 @@ function M.setup(opts)
     require("conform").formatters_by_ft = M.opts.handlers
 end
 
-vim.print(M.default_handlers())
--- return M
+return M
