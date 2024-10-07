@@ -1,5 +1,10 @@
 local M = {}
 
+M.opts = {
+    ensure_installed = {},
+    handlers = {},
+}
+
 function M.default_handlers()
     local registry = require("mason-registry")
     local form = {}
@@ -20,11 +25,6 @@ function M.default_handlers()
     end
     return form
 end
-
-M.opts = {
-    ensure_installed = {},
-    handlers = {},
-}
 
 function M.setup(opts)
     M.opts.ensure_installed = opts.ensure_installed or {}
