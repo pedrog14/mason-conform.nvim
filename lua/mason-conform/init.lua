@@ -8,7 +8,8 @@ local settings = require("mason-conform.settings")
 local function check_and_notify_bad_setup_order()
     local mason_ok, mason = pcall(require, "mason")
     local is_bad_order = not mason_ok or mason.has_setup == false
-    local impacts_functionality = not mason_ok or #settings.current.ensure_installed > 0
+    local impacts_functionality = not mason_ok
+        or #settings.current.ensure_installed > 0
     if is_bad_order and impacts_functionality then
         require("mason-lspconfig.notify")(
             "mason.nvim has not been set up. Make sure to set up 'mason' before 'mason-conform'. :h mason-conform-quickstart",
@@ -30,21 +31,23 @@ function M.setup(config)
 
     local registry = require("mason-registry")
     if registry.register_package_aliases then
-        registry.register_package_aliases(_.map(function(formatter_name)
-            return { formatter_name }
-        end, require("mason-conform.mappings.formatter").package_to_conform))
+        registry.register_package_aliases(
+            _.map(function(formatter_name)
+                return { formatter_name }
+            end, require("mason-conform.mappings.formatter").package_to_conform)
+        )
     end
 
     -- API settings
-    require "mason-conform.api.command"
+    require("mason-conform.api.command")
 
     if settings.current.handlers then
         M.setup_handlers(settings.current.handlers)
     end
 end
 
----See `:h mason-lspconfig.setup_handlers()`
----@param handlers table<string, fun(server_name: string)>
+---See `:h mason-conform.setup_handlers()`
+---@param handlers table<string, fun(formatter_name: string)>
 function M.setup_handlers(handlers)
     local Optional = require("mason-core.optional")
     local formatter_mapping = require("mason-conform.mappings.formatter")
@@ -54,7 +57,10 @@ function M.setup_handlers(handlers)
     local default_handler = Optional.of_nilable(handlers[1])
 
     _.each(function(handler)
-        if type(handler) == "string" and not formatter_mapping.conform_to_package[handler] then
+        if
+            type(handler) == "string"
+            and not formatter_mapping.conform_to_package[handler]
+        then
             notify(
                 ("mason-conform.setup_handlers: Received handler for unknown conform formatter name: %s."):format(
                     handler
@@ -66,21 +72,26 @@ function M.setup_handlers(handlers)
 
     ---@param pkg_name string
     local function get_formatter_name(pkg_name)
-        return Optional.of_nilable(formatter_mapping.package_to_conform[pkg_name])
+        return Optional.of_nilable(
+            formatter_mapping.package_to_conform[pkg_name]
+        )
     end
 
     local function call_handler(formatter_name)
         log.fmt_trace("Checking handler for %s", formatter_name)
-        Optional.of_nilable(handlers[formatter_name]):or_(_.always(default_handler)):if_present(function(handler)
-            log.fmt_trace("Calling handler for %s", formatter_name)
-            local ok, err = pcall(handler, formatter_name)
-            if not ok then
-                notify(err, vim.log.levels.ERROR)
-            end
-        end)
+        Optional.of_nilable(handlers[formatter_name])
+            :or_(_.always(default_handler))
+            :if_present(function(handler)
+                log.fmt_trace("Calling handler for %s", formatter_name)
+                local ok, err = pcall(handler, formatter_name)
+                if not ok then
+                    notify(err, vim.log.levels.ERROR)
+                end
+            end)
     end
 
-    local installed_servers = _.filter_map(get_formatter_name, registry.get_installed_package_names())
+    local installed_servers =
+        _.filter_map(get_formatter_name, registry.get_installed_package_names())
     _.each(call_handler, installed_servers)
     registry:on(
         "package:install:success",
