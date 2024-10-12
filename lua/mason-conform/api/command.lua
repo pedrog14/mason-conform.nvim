@@ -40,7 +40,7 @@ local function parse_packages_from_user_args(user_args)
                             end
 
                             return a.promisify(vim.ui.select)(package_names, {
-                                prompt = ("Please select which server you want to install for language %q:"):format(
+                                prompt = ("Please select which formatter you want to install for language %q:"):format(
                                     formatter_name
                                 ),
                                 format_item = function(package_name)
@@ -69,8 +69,8 @@ local parse_packages_to_install = _.cond({
     { _.T, _.always({}) },
 })
 
-local ConformInstall = a.scope(function(servers)
-    local packages_to_install = parse_packages_to_install(servers)
+local ConformInstall = a.scope(function(formatters)
+    local packages_to_install = parse_packages_to_install(formatters)
     if #packages_to_install > 0 then
         require("mason.api.command").MasonInstall(_.map(function(target)
             if target.version then
@@ -93,7 +93,7 @@ end, {
 })
 
 local function ConformUninstall(formatters)
-    local formatter_mapping = require("mason-conform.mappings.server")
+    local formatter_mapping = require("mason-conform.mappings.formatter")
     require("mason.api.command").MasonUninstall(_.map(function(conform_name)
         return formatter_mapping.conform_to_package[conform_name]
             or conform_name
@@ -126,9 +126,9 @@ _G.mason_conform_completion = {
         return table.concat(completions, "\n")
     end,
     installed_formatter_completion = function()
-        local installed_servers =
+        local installed_formatters =
             require("mason-conform").get_installed_formatters()
-        return table.concat(installed_servers, "\n")
+        return table.concat(installed_formatters, "\n")
     end,
 }
 
