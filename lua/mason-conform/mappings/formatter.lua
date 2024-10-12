@@ -1,138 +1,125 @@
 local M = {}
 
--- conform formatter to mason package mapping
--- https://mason-registry.dev/registry/list
+local _ = require("mason-core.functional")
+
+-- May be not entirely correct :/
 M.conform_to_package = {
-	-- alejandra
 	["asmfmt"] = "asmfmt",
 	["ast-grep"] = "ast-grep",
-	-- astyle
-	-- auto_optional
-	-- autocorrect
 	["autoflake"] = "autoflake",
 	["autopep8"] = "autopep8",
-	-- awk
-	-- bean-format
 	["beautysh"] = "beautysh",
 	["bibtex-tidy"] = "bibtex-tidy",
-	-- biome-check
+	["bicep"] = "bicep",
 	["biome"] = "biome",
+	["biome-check"] = "biome",
 	["black"] = "black",
 	["blade-formatter"] = "blade-formatter",
 	["blue"] = "blue",
+	["bsfmt"] = "brighterscript-formatter",
 	["buf"] = "buf",
 	["buildifier"] = "buildifier",
 	["cbfmt"] = "cbfmt",
 	["clang-format"] = "clang-format",
-	-- cljstyle
+	["cljfmt"] = "cljfmt",
 	["cmake_format"] = "cmakelang",
 	["codespell"] = "codespell",
+	["crlfmt"] = "crlfmt",
 	["csharpier"] = "csharpier",
-	-- cue_fmt
+	["cue_fmt"] = "cuepls",
 	["darker"] = "darker",
-	-- dart_format
+	["dcm_fix"] = "dcm",
+	["dcm_format"] = "dcm",
 	["deno_fmt"] = "deno",
-	-- dfmt
 	["djlint"] = "djlint",
+	["docformatter"] = "docformatter",
+	["doctoc"] = "doctoc",
 	["dprint"] = "dprint",
 	["easy-coding-standard"] = "easy-coding-standard",
 	["elm_format"] = "elm-format",
-	-- erb_format
+	["erb_format"] = "erb-formatter",
 	["eslint_d"] = "eslint_d",
 	["fantomas"] = "fantomas",
-	-- fish_indent
+	["findent"] = "findent",
 	["fixjson"] = "fixjson",
-	-- fnlfmt
 	["fourmolu"] = "fourmolu",
+	["fprettify"] = "fprettify",
 	["gci"] = "gci",
 	["gdformat"] = "gdtoolkit",
 	["gersemi"] = "gersemi",
-	-- gn
-	-- gofmt
 	["gofumpt"] = "gofumpt",
-	["goimports-reviser"] = "goimports-reviser",
 	["goimports"] = "goimports",
+	["goimports-reviser"] = "goimports-reviser",
 	["golines"] = "golines",
 	["google-java-format"] = "google-java-format",
+	["hcl"] = "hclfmt",
 	["htmlbeautifier"] = "htmlbeautifier",
-	-- indent
-	-- init
-	-- injected
 	["isort"] = "isort",
 	["joker"] = "joker",
 	["jq"] = "jq",
 	["jsonnetfmt"] = "jsonnetfmt",
-	-- just
+	["kcl"] = "kcl",
+	["ktfmt"] = "ktfmt",
 	["ktlint"] = "ktlint",
 	["latexindent"] = "latexindent",
+	["lua-format"] = "luaformatter",
 	["markdown-toc"] = "markdown-toc",
 	["markdownlint-cli2"] = "markdownlint-cli2",
-	["markdownlint"] = "markdownlint",
 	["mdformat"] = "mdformat",
+	["mdsf"] = "mdsf",
 	["mdslw"] = "mdslw",
-	-- mix
-	-- nixfmt
+	["nickel"] = "nickel-lang-lsp",
 	["nixpkgs_fmt"] = "nixpkgs-fmt",
+	["npm-groovy-lint"] = "npm-groovy-lint",
 	["ocamlformat"] = "ocamlformat",
 	["opa_fmt"] = "opa",
-	-- packer_fmt
-	-- pangu
-	-- perlimports
-	-- perltidy
-	-- pg_format
+	["ormolu"] = "ormolu",
+	["packer_fmt"] = "hclfmt",
 	["php_cs_fixer"] = "php-cs-fixer",
 	["phpcbf"] = "phpcbf",
-	-- phpinsights
 	["pint"] = "pint",
 	["prettier"] = "prettier",
 	["prettierd"] = "prettierd",
 	["pretty-php"] = "pretty-php",
-	-- puppet-lint
+	["purs-tidy"] = "purescript-tidy",
+	["pyink"] = "pyink",
 	["reorder-python-imports"] = "reorder-python-imports",
-	-- rescript-format
+	["rescript-format"] = "rescriptls",
 	["rubocop"] = "rubocop",
 	["rubyfmt"] = "rubyfmt",
-	-- ruff
+	["ruff"] = "ruff",
 	["ruff_fix"] = "ruff",
 	["ruff_format"] = "ruff",
+	["ruff_organize_imports"] = "ruff",
 	["rufo"] = "rufo",
-	-- ["rustfmt"] = "rustfmt", Deprecated by mason
 	["rustywind"] = "rustywind",
-	-- scalafmt
 	["shellcheck"] = "shellcheck",
 	["shellharden"] = "shellharden",
 	["shfmt"] = "shfmt",
+	["snakefmt"] = "snakefmt",
 	["sql_formatter"] = "sql-formatter",
 	["sqlfluff"] = "sqlfluff",
 	["sqlfmt"] = "sqlfmt",
-	-- squeeze_blanks
 	["standardjs"] = "standardjs",
 	["standardrb"] = "standardrb",
 	["stylelint"] = "stylelint",
-	-- styler
 	["stylua"] = "stylua",
-	-- swift_format
-	-- swiftformat
+	["swiftlint"] = "swiftlint",
 	["taplo"] = "taplo",
 	["templ"] = "templ",
-	-- terraform_fmt
-	-- terragrunt_hclfmt
 	["tlint"] = "tlint",
-	-- trim_newlines
-	-- trim_whitespace
-	-- twig-cs-fixer
+	["twig-cs-fixer"] = "twig-cs-fixer",
 	["typos"] = "typos",
-	-- typstfmt
-	-- uncrustify
+	["typstfmt"] = "typstfmt",
 	["usort"] = "usort",
+	["verible"] = "verible",
 	["xmlformat"] = "xmlformatter",
-	-- xmllint
 	["yamlfix"] = "yamlfix",
 	["yamlfmt"] = "yamlfmt",
 	["yapf"] = "yapf",
 	["yq"] = "yq",
-	-- zigfmt
-	["zprint"] = "zprint",
 }
+
+M.package_to_conform = _.invert(M.conform_to_package)
 
 return M

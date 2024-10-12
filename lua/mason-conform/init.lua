@@ -1,36 +1,114 @@
 local M = {}
 
-M.opts = {
-	ensure_installed = {},
-	handlers = {},
-}
+local _ = require("mason-core.functional")
+local log = require("mason-core.log")
+local platform = require("mason-core.platform")
+local settings = require("mason-conform.settings")
 
-function M.default_handlers()
-	local registry = require("mason-registry")
-	local languages = {}
-	for _, pkg_info in ipairs(registry.get_installed_packages()) do
-		for _, type in ipairs(pkg_info.spec.categories) do
-			if type == "Formatter" then
-				for _, lang in ipairs(pkg_info.spec.languages) do
-					lang = string.lower(lang)
-					if not languages[lang] then
-						languages[lang] = {}
-					end
-					table.insert(languages[lang], pkg_info.name)
-				end
-				break
-			end
-		end
+local function check_and_notify_bad_setup_order()
+	local mason_ok, mason = pcall(require, "mason")
+	local is_bad_order = not mason_ok or mason.has_setup == false
+	local impacts_functionality = not mason_ok or #settings.current.ensure_installed > 0
+	if is_bad_order and impacts_functionality then
+		require("mason-lspconfig.notify")(
+			"mason.nvim has not been set up. Make sure to set up 'mason' before 'mason-conform'. :h mason-conform-quickstart",
+			vim.log.levels.WARN
+		)
 	end
-	return languages
+end
+require("lspconfig.util").add_hook_before()
+
+function M.setup(config)
+	if config then
+		settings.set(config)
+	end
+
+	check_and_notify_bad_setup_order()
+
+	if not platform.is_headless and #settings.current.ensure_installed > 0 then
+		require("mason-lspconfig.ensure_installed")()
+	end
+
+	local registry = require("mason-registry")
+	if registry.register_package_aliases then
+		registry.register_package_aliases(_.map(function(fmt_name)
+			return { fmt_name }
+		end, require("mason-conform.mappings.formatter").package_to_conform))
+	end
+
+	-- API settings
+
+	if settings.current.handlers then
+		M.setup_handlers(settings.current.handlers)
+	end
 end
 
-function M.setup(opts)
-	M.opts.ensure_installed = opts.ensure_installed or {}
-	M.opts.handlers = opts.handlers or {}
+---See `:h mason-lspconfig.setup_handlers()`
+---@param handlers table<string, fun(server_name: string)>
+function M.setup_handlers(handlers)
+	local Optional = require("mason-core.optional")
+	local formatter_mapping = require("mason-conform.mappings.formatter")
+	local registry = require("mason-registry")
+	local notify = require("mason-conform.notify")
 
-	require("mason-conform.auto_install")()
-	require("conform").formatters_by_ft = M.opts.handlers
+	local default_handler = Optional.of_nilable(handlers[1])
+
+	_.each(function(handler)
+		if type(handler) == "string" and not formatter_mapping.conform_to_package[handler] then
+			notify(
+				("mason-conform.setup_handlers: Received handler for unknown conform formatter name: %s."):format(
+					handler
+				),
+				vim.log.levels.WARN
+			)
+		end
+	end, _.keys(handlers))
+
+	---@param pkg_name string
+	local function get_formatter_name(pkg_name)
+		return Optional.of_nilable(formatter_mapping.package_to_conform[pkg_name])
+	end
+
+	local function call_handler(formatter_name)
+		log.fmt_trace("Checking handler for %s", formatter_name)
+		Optional.of_nilable(handlers[formatter_name]):or_(_.always(default_handler)):if_present(function(handler)
+			log.fmt_trace("Calling handler for %s", formatter_name)
+			local ok, err = pcall(handler, formatter_name)
+			if not ok then
+				notify(err, vim.log.levels.ERROR)
+			end
+		end)
+	end
+
+	local installed_servers = _.filter_map(get_formatter_name, registry.get_installed_package_names())
+	_.each(call_handler, installed_servers)
+	registry:on(
+		"package:install:success",
+		vim.schedule_wrap(function(pkg)
+			get_formatter_name(pkg.name):if_present(call_handler)
+		end)
+	)
+end
+
+---@return string[]
+function M.get_installed_formatters()
+	local Optional = require("mason-core.optional")
+	local registry = require("mason-registry")
+	local server_mapping = require("mason-conform.mappings.formatter")
+
+	return _.filter_map(function(pkg_name)
+		return Optional.of_nilable(server_mapping.package_to_conform[pkg_name])
+	end, registry.get_installed_package_names())
+end
+
+---Returns the "conform <-> mason" mapping tables.
+---@return { conform_to_mason: table<string, string>, mason_to_conform: table<string, string> }
+function M.get_mappings()
+	local mappings = require("mason-conform.mappings.formatter")
+	return {
+		conform_to_mason = mappings.conform_to_package,
+		mason_to_conform = mappings.package_to_conform,
+	}
 end
 
 return M
