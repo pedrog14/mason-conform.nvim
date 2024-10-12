@@ -112,6 +112,32 @@ function M.get_installed_formatters()
     end, registry.get_installed_package_names())
 end
 
+---Get a list of available servers in mason-registry
+---@param filter { filetype: string | string[] }?: (optional) Used to filter the list of server names.
+--- The available keys are
+---   - filetype (string | string[]): Only return servers with matching filetype
+---@return string[]
+function M.get_available_formatters(filter)
+    local registry = require("mason-registry")
+    local formatter_mapping = require("mason-conform.mappings.formatter")
+    local Optional = require("mason-core.optional")
+    filter = filter or {}
+    local predicates = {}
+
+    return _.filter_map(function(pkg_name)
+        return Optional.of_nilable(
+            formatter_mapping.package_to_conform[pkg_name]
+        )
+            :map(function(formatter_name)
+                if
+                    #predicates == 0 or _.all_pass(predicates, formatter_name)
+                then
+                    return formatter_name
+                end
+            end)
+    end, registry.get_all_package_names())
+end
+
 ---Returns the "conform <-> mason" mapping tables.
 ---@return { conform_to_mason: table<string, string>, mason_to_conform: table<string, string> }
 function M.get_mappings()

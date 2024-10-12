@@ -113,7 +113,7 @@ end, {
 _G.mason_conform_completion = {
     available_formatter_completion = function()
         local available_formatters =
-            require("mason-conform").get_available_servers()
+            require("mason-conform").get_available_formatters()
         local language_mapping = require("mason-conform.mappings.language")
         local sort_deduped =
             _.compose(_.sort_by(_.identity), _.uniq_by(_.identity))
