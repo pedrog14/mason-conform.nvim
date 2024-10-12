@@ -127,7 +127,7 @@ _G.mason_conform_completion = {
     end,
     installed_formatter_completion = function()
         local installed_servers =
-            require("mason-conform").get_installed_servers()
+            require("mason-conform").get_installed_formatters()
         return table.concat(installed_servers, "\n")
     end,
 }
