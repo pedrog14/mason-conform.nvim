@@ -150,4 +150,27 @@ function M.get_mappings()
     }
 end
 
+M.default_handlers = {
+    function(formatter_name)
+        local formatters_by_ft = require("conform").formatters_by_ft
+
+        local conform_to_package =
+            require("mason-conform.mappings.formatter").conform_to_package
+
+        local get_languages = function(pkg_name)
+            return require("mason-registry").get_package(pkg_name).spec.languages
+        end
+
+        for _, language in
+            ipairs(get_languages(conform_to_package[formatter_name]))
+        do
+            language = language:lower()
+            if not formatters_by_ft[language] then
+                formatters_by_ft[language] = {}
+            end
+            table.insert(formatters_by_ft[language], formatter_name)
+        end
+    end,
+}
+
 return M
