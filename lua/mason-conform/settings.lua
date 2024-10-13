@@ -5,9 +5,6 @@ local DEFAULT_SETTINGS = {
     ---@type string[]
     ensure_installed = {},
 
-    ---@type boolean
-    automatic_installation = false,
-
     ---@type table<string, fun(fmt_name: string)>
     handlers = nil,
 }
