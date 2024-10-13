@@ -90,9 +90,9 @@ function M.setup_handlers(handlers)
             end)
     end
 
-    local installed_servers =
+    local installed_formatters =
         _.filter_map(get_formatter_name, registry.get_installed_package_names())
-    _.each(call_handler, installed_servers)
+    _.each(call_handler, installed_formatters)
     registry:on(
         "package:install:success",
         vim.schedule_wrap(function(pkg)
@@ -105,14 +105,16 @@ end
 function M.get_installed_formatters()
     local Optional = require("mason-core.optional")
     local registry = require("mason-registry")
-    local server_mapping = require("mason-conform.mappings.formatter")
+    local formatter_mapping = require("mason-conform.mappings.formatter")
 
     return _.filter_map(function(pkg_name)
-        return Optional.of_nilable(server_mapping.package_to_conform[pkg_name])
+        return Optional.of_nilable(
+            formatter_mapping.package_to_conform[pkg_name]
+        )
     end, registry.get_installed_package_names())
 end
 
----Get a list of available servers in mason-registry
+---Get a list of available formatters in mason-registry
 ---@param filter { filetype: string | string[] }?: (optional) Used to filter the list of server names.
 --- The available keys are
 ---   - filetype (string | string[]): Only return servers with matching filetype

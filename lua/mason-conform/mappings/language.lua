@@ -9,18 +9,16 @@ function M.get_language_map()
     end
     ---@type table<string, string[]>
     local languages = {}
-    for _, pkg_info in ipairs(registry.get_all_package_specs()) do
-        for _, language in ipairs(pkg_info.languages) do
-            language = string.lower(language)
+    for _, pkg_spec in ipairs(registry.get_all_package_specs()) do
+        for _, language in ipairs(pkg_spec.languages) do
+            language = language:lower()
             if not languages[language] then
                 languages[language] = {}
             end
-            table.insert(languages[language], pkg_info.name)
+            table.insert(languages[language], pkg_spec.name)
         end
     end
     return languages
 end
-
-vim.print(M.get_language_map())
 
 return M
