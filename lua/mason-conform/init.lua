@@ -12,7 +12,7 @@ local function check_and_notify_bad_setup_order()
         or #settings.current.ensure_installed > 0
     if is_bad_order and impacts_functionality then
         require("mason-lspconfig.notify")(
-            "mason.nvim has not been set up. Make sure to set up 'mason' before 'mason-conform'. :h mason-conform-quickstart",
+            "mason.nvim has not been set up. Make sure to set up 'mason' before 'mason-conform'.",
             vim.log.levels.WARN
         )
     end
@@ -46,7 +46,6 @@ function M.setup(config)
     end
 end
 
----See `:h mason-conform.setup_handlers()`
 ---@param handlers table<string, fun(formatter_name: string)>
 function M.setup_handlers(handlers)
     local Optional = require("mason-core.optional")
@@ -115,9 +114,9 @@ function M.get_installed_formatters()
 end
 
 ---Get a list of available formatters in mason-registry
----@param filter { filetype: string | string[] }?: (optional) Used to filter the list of server names.
+---@param filter { filetype: string | string[] }?: (optional) Used to filter the list of formatter names.
 --- The available keys are
----   - filetype (string | string[]): Only return servers with matching filetype
+---   - filetype (string | string[]): Only return formatters with matching filetype
 ---@return string[]
 function M.get_available_formatters(filter)
     local registry = require("mason-registry")

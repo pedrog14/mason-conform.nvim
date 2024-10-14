@@ -2,7 +2,6 @@ local M = {}
 
 local _ = require("mason-core.functional")
 
--- May be not entirely correct :/
 M.conform_to_package = {
     ["asmfmt"] = "asmfmt",
     ["ast-grep"] = "ast-grep",
