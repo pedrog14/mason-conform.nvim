@@ -160,4 +160,23 @@ function M.get_mappings()
     }
 end
 
+---@param formatter_name string
+---@return conform.FiletypeFormatter
+function M.formatter_handler(formatter_name)
+    local fts = {}
+    for ft, fmts in pairs(require "mason-conform.mappings.filetype") do
+        for _, fmt in ipairs(fmts) do
+            if fmt == formatter_name then
+                if not fts[ft] then
+                    fts[ft] = {}
+                end
+                fts[ft][#fts[ft] + 1] = formatter_name
+                break
+            end
+        end
+    end
+    local fmt_by_ft = vim.deepcopy(require("conform").formatters_by_ft)
+    return vim.tbl_deep_extend("force", fmt_by_ft, fts)
+end
+
 return M
