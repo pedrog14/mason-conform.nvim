@@ -163,10 +163,14 @@ end
 ---@param formatter_name string
 ---@return table<string, conform.FiletypeFormatter>
 function M.formatter_handler(formatter_name)
+    local filetype = require "mason-conform.mappings.filetype"
+
     local fts = {}
-    for ft, fmts in pairs(require "mason-conform.mappings.filetype") do
+    local formatter_pkg = require("mason-conform.mappings.formatter").conform_to_package[formatter_name]
+
+    for ft, fmts in pairs(filetype) do
         for _, fmt in ipairs(fmts) do
-            if fmt == formatter_name then
+            if fmt == formatter_pkg then
                 if not fts[ft] then
                     fts[ft] = {}
                 end
