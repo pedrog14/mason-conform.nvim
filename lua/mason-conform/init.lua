@@ -171,7 +171,6 @@ function M.formatter_handler(formatter_name)
                     fts[ft] = {}
                 end
                 fts[ft][#fts[ft] + 1] = formatter_name
-                break
             end
         end
     end
