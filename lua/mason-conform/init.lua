@@ -166,11 +166,10 @@ function M.formatter_handler(formatter_name)
     local filetype = require "mason-conform.mappings.filetype"
 
     local fts = {}
-    local formatter_pkg = require("mason-conform.mappings.formatter").conform_to_package[formatter_name]
 
     for ft, fmts in pairs(filetype) do
         for _, fmt in ipairs(fmts) do
-            if fmt == formatter_pkg then
+            if M.package_to_conform[fmt] == formatter_name then
                 if not fts[ft] then
                     fts[ft] = {}
                 end
@@ -178,8 +177,9 @@ function M.formatter_handler(formatter_name)
             end
         end
     end
-    local fmt_by_ft = vim.deepcopy(require("conform").formatters_by_ft)
-    return vim.tbl_deep_extend("force", fmt_by_ft, fts)
+
+    local conform_fts = vim.deepcopy(require("conform").formatters_by_ft)
+    return vim.tbl_deep_extend("force", conform_fts, fts)
 end
 
 return M
