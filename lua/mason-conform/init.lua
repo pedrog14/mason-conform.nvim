@@ -161,7 +161,7 @@ function M.get_mappings()
 end
 
 ---@param formatter_name string
----@return conform.FiletypeFormatter
+---@return table<string, conform.FiletypeFormatter>
 function M.formatter_handler(formatter_name)
     local fts = {}
     for ft, fmts in pairs(require "mason-conform.mappings.filetype") do
