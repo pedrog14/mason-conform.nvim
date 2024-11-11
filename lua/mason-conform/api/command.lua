@@ -89,7 +89,7 @@ local parse_packages_to_install = _.cond {
     { _.T, _.always {} },
 }
 
-local FormatterInstall = a.scope(function(formatters)
+local ConformInstall = a.scope(function(formatters)
     local packages_to_install = parse_packages_to_install(formatters)
     if #packages_to_install > 0 then
         require("mason.api.command").MasonInstall(_.map(function(target)
@@ -100,28 +100,28 @@ local FormatterInstall = a.scope(function(formatters)
             end
         end, packages_to_install))
         local ui = require "mason.ui"
-        ui.set_view "Formatter"
+        ui.set_view "Conform"
     end
 end)
 
-vim.api.nvim_create_user_command("FormatterInstall", function(opts)
-    FormatterInstall(opts.fargs)
+vim.api.nvim_create_user_command("ConformInstall", function(opts)
+    ConformInstall(opts.fargs)
 end, {
     desc = "Install one or more formatters.",
     nargs = "*",
     complete = "custom,v:lua.mason_conform_completion.available_formatter_completion",
 })
 
-local function FormatterUninstall(formatters)
+local function ConformUninstall(formatters)
     local formatter_mapping = require "mason-conform.mappings.formatter"
     require("mason.api.command").MasonUninstall(_.map(function(conform_name)
         return formatter_mapping.conform_to_package[conform_name] or conform_name
     end, formatters))
-    require("mason.ui").set_view "Formatter"
+    require("mason.ui").set_view "Conform"
 end
 
-vim.api.nvim_create_user_command("FormatterUninstall", function(opts)
-    FormatterUninstall(opts.fargs)
+vim.api.nvim_create_user_command("ConformUninstall", function(opts)
+    ConformUninstall(opts.fargs)
 end, {
     desc = "Uninstall one or more formatters.",
     nargs = "+",
@@ -144,6 +144,6 @@ _G.mason_conform_completion = {
 }
 
 return {
-    FormatterInstall = FormatterInstall,
-    FormatterUninstall = FormatterUninstall,
+    ConformInstall = ConformInstall,
+    ConformUninstall = ConformUninstall,
 }

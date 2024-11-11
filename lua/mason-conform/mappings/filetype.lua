@@ -34,6 +34,7 @@ return {
   javascriptreact = { "prettier", "rustywind", "ast-grep", "prettierd" },
   jinja = { "djlint" },
   json = { "prettier", "biome", "jq", "prettierd", "fixjson", "clang-format" },
+  jsonc = { "prettier", "biome", "jq", "prettierd", "fixjson", "clang-format" },
   jsonnet = { "jsonnetfmt" },
   kotlin = { "ast-grep", "ktlint", "ktfmt" },
   ksh = { "shfmt", "beautysh" },
