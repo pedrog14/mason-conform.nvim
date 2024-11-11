@@ -2,7 +2,7 @@
 
 mason-conform bridges [mason.nvim](https://github.com/williamboman/mason.nvim) with the [conform.nvim](https://github.com/stevearc/conform.nvim) plugin - making it easier to use both plugins together.
 
-(It is also a blatant copy of mason-lspconfig, all credits to [williamboman](https://github.com/williamboman))
+(It is also a blatant copy of [mason-lspconfig](https://github.com/williamboman/mason-lspconfig.nvim), all credits to [williamboman](https://github.com/williamboman))
  
 # Requirements
 - Neovim version Neovim 0.10+
