@@ -1,4 +1,4 @@
-# Mason-Conform
+# mason-conform.nvim
 
 mason-conform bridges [mason.nvim](https://github.com/williamboman/mason.nvim) with the [conform.nvim](https://github.com/stevearc/conform.nvim) plugin - making it easier to use both plugins together.
 
