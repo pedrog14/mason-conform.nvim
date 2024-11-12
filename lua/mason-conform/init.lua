@@ -162,8 +162,8 @@ end
 
 ---@param formatter_name string
 function M.formatter_handler(formatter_name)
-    local formatters_by_ft = require("conform").formatters_by_ft or {}
-    local filetypes = vim.deepcopy(require "mason-conform.mappings.filetype")
+    local formatters_by_ft = vim.deepcopy(require("conform").formatters_by_ft or {})
+    local filetypes = require "mason-conform.mappings.filetype"
 
     for filetype, formatters in pairs(filetypes) do
         for _, formatter in ipairs(formatters) do
@@ -171,7 +171,7 @@ function M.formatter_handler(formatter_name)
                 if not formatters_by_ft[filetype] then
                     formatters_by_ft[filetype] = {}
                 end
-                table.insert(formatters_by_ft[filetype], formatter)
+                formatters_by_ft[filetype][#formatters_by_ft[filetype] + 1] = formatter_name
             end
         end
     end
