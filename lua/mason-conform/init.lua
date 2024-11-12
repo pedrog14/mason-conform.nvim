@@ -10,7 +10,7 @@ local function check_and_notify_bad_setup_order()
     local is_bad_order = not mason_ok or mason.has_setup == false
     local impacts_functionality = not mason_ok or #settings.current.ensure_installed > 0
     if is_bad_order and impacts_functionality then
-        require "mason-conform.notify"(
+        require "mason-conform.notify" (
             "mason.nvim has not been set up. Make sure to set up 'mason' before 'mason-conform'.",
             vim.log.levels.WARN
         )
@@ -26,7 +26,7 @@ function M.setup(config)
     check_and_notify_bad_setup_order()
 
     if not platform.is_headless and #settings.current.ensure_installed > 0 then
-        require "mason-conform.ensure_installed"()
+        require "mason-conform.ensure_installed" ()
     end
 
     local registry = require "mason-registry"
@@ -113,8 +113,8 @@ local function is_formatter_in_filetype(filetype)
         _.set_of,
         _.cond {
             { _.is "string", get_formatters_by_filetype },
-            { _.is "table", _.compose(_.flatten, _.map(get_formatters_by_filetype)) },
-            { _.T, _.always {} },
+            { _.is "table",  _.compose(_.flatten, _.map(get_formatters_by_filetype)) },
+            { _.T,           _.always {} },
         }
     )(filetype)
 
@@ -161,25 +161,20 @@ function M.get_mappings()
 end
 
 ---@param formatter_name string
----@return table<string, conform.FiletypeFormatter>
 function M.formatter_handler(formatter_name)
-    local filetype = require "mason-conform.mappings.filetype"
+    local formatters_by_ft = require "conform".formatters_by_ft or {}
+    local filetypes = vim.deepcopy(require "mason-conform.mappings.filetype")
 
-    local fts = {}
-
-    for ft, fmts in pairs(filetype) do
-        for _, fmt in ipairs(fmts) do
-            if M.package_to_conform[fmt] == formatter_name then
-                if not fts[ft] then
-                    fts[ft] = {}
+    for filetype, formatters in pairs(filetypes) do
+        for _, formatter in ipairs(formatters) do
+            if M.get_mappings().mason_to_conform[formatter] == formatter_name then
+                if not formatters_by_ft[filetype] then
+                    formatters_by_ft[filetype] = {}
                 end
-                fts[ft][#fts[ft] + 1] = formatter_name
+                table.insert(formatters_by_ft[filetype], formatter)
             end
         end
     end
-
-    local conform_fts = vim.deepcopy(require("conform").formatters_by_ft)
-    return vim.tbl_deep_extend("force", conform_fts, fts)
 end
 
 return M
