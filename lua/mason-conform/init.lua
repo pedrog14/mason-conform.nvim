@@ -10,7 +10,7 @@ local function check_and_notify_bad_setup_order()
     local is_bad_order = not mason_ok or mason.has_setup == false
     local impacts_functionality = not mason_ok or #settings.current.ensure_installed > 0
     if is_bad_order and impacts_functionality then
-        require "mason-conform.notify" (
+        require "mason-conform.notify"(
             "mason.nvim has not been set up. Make sure to set up 'mason' before 'mason-conform'.",
             vim.log.levels.WARN
         )
@@ -26,7 +26,7 @@ function M.setup(config)
     check_and_notify_bad_setup_order()
 
     if not platform.is_headless and #settings.current.ensure_installed > 0 then
-        require "mason-conform.ensure_installed" ()
+        require "mason-conform.ensure_installed"()
     end
 
     local registry = require "mason-registry"
@@ -113,8 +113,8 @@ local function is_formatter_in_filetype(filetype)
         _.set_of,
         _.cond {
             { _.is "string", get_formatters_by_filetype },
-            { _.is "table",  _.compose(_.flatten, _.map(get_formatters_by_filetype)) },
-            { _.T,           _.always {} },
+            { _.is "table", _.compose(_.flatten, _.map(get_formatters_by_filetype)) },
+            { _.T, _.always {} },
         }
     )(filetype)
 
@@ -162,7 +162,7 @@ end
 
 ---@param formatter_name string
 function M.formatter_handler(formatter_name)
-    local formatters_by_ft = require "conform".formatters_by_ft or {}
+    local formatters_by_ft = require("conform").formatters_by_ft or {}
     local filetypes = vim.deepcopy(require "mason-conform.mappings.filetype")
 
     for filetype, formatters in pairs(filetypes) do
@@ -175,6 +175,8 @@ function M.formatter_handler(formatter_name)
             end
         end
     end
+
+    return formatters_by_ft
 end
 
 return M
