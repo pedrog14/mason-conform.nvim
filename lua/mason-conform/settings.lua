@@ -8,7 +8,7 @@ local DEFAULT_SETTINGS = {
     ---@type boolean
     automatic_installation = false,
 
-    ---@type table<string, fun(server_name: string)>?
+    ---@type table<string, fun(formatter_name: string)>?
     handlers = nil,
 }
 
